@@ -1,69 +1,103 @@
-module.exports = (sequelize, DataTypes) => {
-  const Hotel = sequelize.define('Hotel', {
+const Sequelize = require('sequelize');
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define('hotel', {
     userMobileNumber: {
       type: DataTypes.BIGINT,
+      allowNull: true,
       references: {
-        model: 'User_Table',
+        model: 'User',
         key: 'User_Mobile_Number'
       },
-      field: 'User_Mobile_Number', // This keeps the snake_case column name in DB
+      field: 'User_Mobile_Number'
     },
     hotelId: {
       type: DataTypes.UUID,
+      allowNull: false,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
-      field: 'Hotel_ID', // Map to snake_case column name in DB
+      field: 'Hotel_ID'
     },
     hotelName: {
-      type: DataTypes.STRING,
-      field: 'Hotel_Name', // Map to snake_case column name in DB
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'Hotel_Name'
     },
     hotelAddress: {
-      type: DataTypes.STRING,
-      field: 'Hotel_Address', // Map to snake_case column name in DB
+      type: DataTypes.STRING(250),
+      allowNull: true,
+      field: 'Hotel_Address'
     },
     hotelCity: {
-      type: DataTypes.STRING,
-      field: 'Hotel_City', // Map to snake_case column name in DB
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      field: 'Hotel_City'
     },
     hotelRating: {
-      type: DataTypes.STRING,
-      field: 'Hotel_Rating', // Map to snake_case column name in DB
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      field: 'Hotel_Rating'
     },
     hotelPhone: {
       type: DataTypes.BIGINT,
-      field: 'Hotel_Phone', // Map to snake_case column name in DB
+      allowNull: true,
+      field: 'Hotel_Phone'
     },
     hotelMapLocationLink: {
-      type: DataTypes.STRING,
-      field: 'Hotel_Map_Location_Link', // Map to snake_case column name in DB
+      type: DataTypes.STRING(250),
+      allowNull: true,
+      field: 'Hotel_Map_Location_Link'
     },
     hotelVlogVideoLink: {
-      type: DataTypes.STRING,
-      field: 'Hotel_Vlog_Video_Link', // Map to snake_case column name in DB
+      type: DataTypes.STRING(250),
+      allowNull: true,
+      field: 'Hotel_Vlog_Video_Link'
     },
     vlogVideoViewCount: {
-      type: DataTypes.STRING,
-      field: 'Vlog_Video_View_Count', // Map to snake_case column name in DB
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      field: 'Vlog_Video_View_Count'
     },
     vlogPostDate: {
       type: DataTypes.DATE,
-      field: 'Vlog_Post_Date', // Map to snake_case column name in DB
+      allowNull: true,
+      field: 'Vlog_Post_Date'
+    },
+    verified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: true,
+      field: 'is_active'
     },
     createdDate: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      field: 'created_date', // Map to snake_case column name in DB
+      allowNull: true,
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP'),
+      field: 'created_date'
     },
     modifiedDate: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      field: 'modified_date', // Map to snake_case column name in DB
-    },
+      allowNull: true,
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP'),
+      field: 'modified_date'
+    }
   }, {
-    tableName: 'Hotel_Table', // Define the table name
-    timestamps: false, // Disable the default `createdAt` and `updatedAt` fields
+    sequelize,
+    tableName: 'Hotel',
+    schema: 'public',
+    timestamps: false,
+    indexes: [
+      {
+        name: "Hotel_pkey",
+        unique: true,
+        fields: [
+          { name: "Hotel_ID" },
+        ]
+      },
+    ]
   });
-
-  return Hotel;
 };
