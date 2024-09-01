@@ -26,7 +26,7 @@ app.post('/login', async (req, res) => {
         const { userMobileNumber } = req.body;
         const user = await db.User.findOne({ where: { userMobileNumber } });
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(204).json({ error: 'User not found' });
         }
         res.status(200).json({ success: true });
     } catch (error) {
@@ -41,7 +41,7 @@ app.get('/count/:userMobileNumber', async (req, res) => {
         const hotels = await db.Hotel.count({ where: { userMobileNumber } });
         const verifiedHotel = await db.Hotel.count({ where: { verified: true } });
         console.log(hotels, "hotelshotels")
-        res.status(20).json({ allCount: hotels, verifiedCount: verifiedHotel });
+        res.status(200).json({ allCount: hotels, verifiedCount: verifiedHotel });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -96,7 +96,7 @@ app.post('/hotel/:id', async (req, res) => {
             const updatedHotel = await hotel.findByPk(hotelId);
             res.json(updatedHotel);
         } else {
-            res.status(404).json({ error: 'Hotel not found' });
+            res.status(204).json({ error: 'Hotel not found' });
         }
     } catch (error) {
         console.error('Error updating hotel:', error);
