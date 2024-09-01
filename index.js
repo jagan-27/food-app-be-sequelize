@@ -29,7 +29,7 @@ app.post('/login', async (req, res) => {
         if (!user) {
             return res.status(204).json({ error: 'User not found' });
         }
-        res.status(200).json({ success: true });
+        return res.status(200).json({ success: true });
     } catch (error) {
         console.log(error, "error in login")
         res.status(500).json({ error: "error in login" });
