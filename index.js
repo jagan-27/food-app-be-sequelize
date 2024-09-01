@@ -76,7 +76,7 @@ app.post('/createhotel', async (req, res) => {
         if (created) {
             return res.status(201).json(result);
         }
-        return res.status(200).json({ success: false });
+        return res.status(208).json({ success: false });
     } catch (error) {
         console.log(error, "error in createhotel")
         res.status(500).json({ error: "error in createhotel" });
