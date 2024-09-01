@@ -25,6 +25,7 @@ app.post('/login', async (req, res) => {
     try {
         const { userMobileNumber } = req.body;
         const user = await db.User.findOne({ where: { userMobileNumber } });
+        console.log(user,"userr")
         if (!user) {
             return res.status(204).json({ error: 'User not found' });
         }
