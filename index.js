@@ -70,10 +70,7 @@ app.post('/createhotel', async (req, res) => {
                 hotelMapLocationLink: hotel.hotelMapLocationLink,
                 vlogVideoViewCount: hotel.vlogVideoViewCount,
                 vlogPostDate: hotel.vlogPostDate,
-                verified: hotel.verified,
-                isActive: hotel.isActive,
-                createdDate: hotel.createdDate,
-                modifiedDate: hotel.modifiedDate
+                hotelVlogVideoLink: hotel.hotelVlogVideoLink
             }
         });
         if (created) {
