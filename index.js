@@ -60,7 +60,7 @@ app.post('/createhotel', async (req, res) => {
     try {
         const hotel = req.body;
         const [result, created] = await db.Hotel.findOrCreate({
-            where: { hotelVlogVideoLink: hotel.hotelVlogVideoLink }, default: {
+            where: { hotelVlogVideoLink: hotel.hotelVlogVideoLink }, defaults: {
                 userMobileNumber: hotel.userMobileNumber,
                 hotelName: hotel.hotelName,
                 hotelAddress: hotel.hotelAddress,
