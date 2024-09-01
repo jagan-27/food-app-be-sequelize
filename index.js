@@ -25,10 +25,16 @@ app.post('/login', async (req, res) => {
     try {
         const { userMobileNumber } = req.body;
         const user = await db.User.findOne({ where: { userMobileNumber } });
+
         if (!user) {
             return res.status(204).json({ error: 'User not found' });
+        } else {
+            if (user?.dataValues?.isActive) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(200).json({ success: false, error: 'Please check with admin' });
+            }
         }
-        res.status(200).json({ success: true });
     } catch (error) {
         console.log(error, "error in login")
         res.status(500).json({ error: "error in login" });
