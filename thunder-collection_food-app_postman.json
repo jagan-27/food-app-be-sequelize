@@ -1,0 +1,137 @@
+{
+    "info": {
+        "_postman_id": "d3f5ad30-cc71-400a-8382-81091e215527",
+        "name": "food-app",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
+    },
+    "item": [
+        {
+            "name": "createhotel",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "{{url}}/createhotel",
+                    "path": [
+                        "createhotel"
+                    ],
+                    "host": [
+                        "{{url}}"
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    },
+                    "raw": "{\n  \"userMobileNumber\": 9876543210,\n  \"hotelName\": \"The Grand Hotelssssssssss\",\n  \"hotelAddress\": \"123 Beach Road\",\n  \"hotelCity\": \"Chennai\",\n  \"hotelRating\": \"4.5\",\n  \"hotelPhone\": 9876543211,\n  \"hotelMapLocationLink\": \"https://maps.example.com/location123\",\n  \"hotelVlogVideoLink\": \"https://vlog.example.com/hotel1291\",\n  \"vlogVideoViewCount\": \"15000\",\n  \"vlogPostDate\": \"2024-08-31\"\n}\n"
+                }
+            }
+        },
+        {
+            "name": "count",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "{{url}}/count/9876543210",
+                    "path": [
+                        "count",
+                        "9876543210"
+                    ],
+                    "host": [
+                        "{{url}}"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "gethotels",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "{{url}}/gethotels",
+                    "path": [
+                        "gethotels"
+                    ],
+                    "host": [
+                        "{{url}}"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "login",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "{{url}}/login",
+                    "path": [
+                        "login"
+                    ],
+                    "host": [
+                        "{{url}}"
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    },
+                    "raw": "{\n  \"userMobileNumber\": 9876543210,\n  \"userName\": \"Alice Smith\",\n  \"userType\": \"User\",\n  \"userPassword\": \"password456\"\n}"
+                }
+            }
+        },
+        {
+            "name": "dish",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "{{url}}/dish",
+                    "path": [
+                        "dish"
+                    ],
+                    "host": [
+                        "{{url}}"
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    },
+                    "raw": "{\n  \"hotelId\": \"300b0a31-ccad-4350-9483-34a81664fb84\",\n  \"dishName\": \"Spicy Grilled Chicken\",\n  \"dishPrice\": \"12.99\",\n  \"dishCategory\": \"Non-Vegetarian\"\n}"
+                }
+            }
+        },
+        {
+            "name": "timing",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "{{url}}/timing",
+                    "path": [
+                        "timing"
+                    ],
+                    "host": [
+                        "{{url}}"
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    },
+                    "raw": "{\n  \"hotelId\": \"a5a1ca0e-8945-4f13-8a17-f2dd34102b53\",\n  \"morning\": \"6:00 AM - 11:00 AM\",\n  \"noon\": \"12:00 PM - 3:00 PM\",\n  \"evening\": \"5:00 PM - 9:00 PM\"\n}"
+                }
+            }
+        }
+    ]
+}

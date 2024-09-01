@@ -66,7 +66,7 @@ app.post('/createhotel', async (req, res) => {
     try {
         const hotel = req.body;
         const [result, created] = await db.Hotel.findOrCreate({
-            where: { hotelVlogVideoLink: hotel.hotelVlogVideoLink }, default: {
+            where: { hotelVlogVideoLink: hotel.hotelVlogVideoLink }, defaults: {
                 userMobileNumber: hotel.userMobileNumber,
                 hotelName: hotel.hotelName,
                 hotelAddress: hotel.hotelAddress,
@@ -76,16 +76,13 @@ app.post('/createhotel', async (req, res) => {
                 hotelMapLocationLink: hotel.hotelMapLocationLink,
                 vlogVideoViewCount: hotel.vlogVideoViewCount,
                 vlogPostDate: hotel.vlogPostDate,
-                verified: hotel.verified,
-                isActive: hotel.isActive,
-                createdDate: hotel.createdDate,
-                modifiedDate: hotel.modifiedDate
+                hotelVlogVideoLink: hotel.hotelVlogVideoLink
             }
         });
         if (created) {
             return res.status(201).json(result);
         }
-        return res.status(200).json({ success: false });
+        return res.status(208).json({ success: false });
     } catch (error) {
         console.log(error, "error in createhotel")
         res.status(500).json({ error: "error in createhotel" });
