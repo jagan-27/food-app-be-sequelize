@@ -45,7 +45,7 @@ app.get('/count/:userMobileNumber', async (req, res) => {
     try {
         const userMobileNumber = req.params.userMobileNumber;
         const hotels = await db.Hotel.count({ where: { userMobileNumber } });
-        const verifiedHotel = await db.Hotel.count({ where: { valid: true } });
+        const verifiedHotel = await db.Hotel.count({ where: { userMobileNumber, valid: true } });
         console.log(hotels, "hotelshotels")
         res.status(200).json({ allCount: hotels, verifiedCount: verifiedHotel });
     } catch (error) {
