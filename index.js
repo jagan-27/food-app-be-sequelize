@@ -3,8 +3,6 @@ const { Sequelize, DataTypes, where, Op, fn, col } = require('sequelize');
 const cors = require('cors');
 const initModels = require('./models/init-models');
 const config = require('./config');
-// Get the current date as a string in 'YYYY-MM-DD' format
-const currentDateOnly = new Date().toISOString().split('T')[0];
 
 
 const app = express()
@@ -43,22 +41,28 @@ app.post('/login', async (req, res) => {
     }
 })
 
-app.get('/count/:userMobileNumber', async (req, res) => {
+app.get('/count/:userMobileNumber?', async (req, res) => {
     try {
         const userMobileNumber = req.params.userMobileNumber;
-        const hotels = await db.Hotel.count({ where: { userMobileNumber } });
-        console.log("Entering Daily Count");
+        
+        // Get the current date as a string in 'YYYY-MM-DD' format
+        const currentDateOnly = new Date().toISOString().split('T')[0];
+        const whereCondition = userMobileNumber ? { userMobileNumber } : {};
+        const hotels = await db.Hotel.count({ where: whereCondition });
         const dailyCount = await db.Hotel.count({ 
             where: {
-                userMobileNumber,
+                ...whereCondition,
                 [Op.and]: [
                   Sequelize.where(fn('DATE', col('created_date')), currentDateOnly) // Proper use of Sequelize's functions
                 ]
             }
         });
-        console.log("DailyCount = " + dailyCount);
-        const verifiedHotel = await db.Hotel.count({ where: { userMobileNumber, valid: true } });
-        console.log("Valid Count = "+ verifiedHotel);
+        const verifiedHotel = await db.Hotel.count({ 
+            where: { 
+                ...whereCondition,
+                valid: true 
+            } 
+        });
         res.status(200).json({ 
             allCount: hotels, 
             verifiedCount: verifiedHotel,
