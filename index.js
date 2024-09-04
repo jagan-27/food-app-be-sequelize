@@ -1,8 +1,10 @@
 const express = require('express')
-const { Sequelize, DataTypes, where } = require('sequelize');
+const { Sequelize, DataTypes, where, Op, fn, col } = require('sequelize');
 const cors = require('cors');
 const initModels = require('./models/init-models');
 const config = require('./config');
+// Get the current date as a string in 'YYYY-MM-DD' format
+const currentDateOnly = new Date().toISOString().split('T')[0];
 
 
 const app = express()
@@ -45,9 +47,21 @@ app.get('/count/:userMobileNumber', async (req, res) => {
     try {
         const userMobileNumber = req.params.userMobileNumber;
         const hotels = await db.Hotel.count({ where: { userMobileNumber } });
-        const verifiedHotel = await db.Hotel.count({ where: { verified: true } });
+        const dailyCount = await db.Hotel.count({ 
+            where: {
+                userMobileNumber,
+                [Op.and]: [
+                  Sequelize.where(fn('DATE', col('created_date')), currentDateOnly) // Proper use of Sequelize's functions
+                ]
+            }
+        });
+        const verifiedHotel = await db.Hotel.count({ where: { userMobileNumber, valid: true } });
         console.log(hotels, "hotelshotels")
-        res.status(200).json({ allCount: hotels, verifiedCount: verifiedHotel });
+        res.status(200).json({ 
+            allCount: hotels, 
+            verifiedCount: verifiedHotel,
+            dailyCount: dailyCount
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
