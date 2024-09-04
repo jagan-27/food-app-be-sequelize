@@ -69,7 +69,16 @@ app.get('/count/:userMobileNumber', async (req, res) => {
 
 app.get('/gethotels', async (req, res) => {
     try {
-        const hotels = await db.Hotel.findAll();
+        const hotels = await db.Hotel.findAll({include: [
+            {
+                model: db.HotelSignatureDish,
+                as: 'hotelSignatureDishes'
+            },
+            {
+                model: db.HotelTiming,
+                as: 'hotelTimings'
+            }
+        ]});
         res.status(200).json(hotels);
     } catch (error) {
         res.status(500).json({ error: error.message });
