@@ -73,6 +73,72 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
     }
 })
 
+app.put('/verify', async (req, res) => {
+
+    const { hotelId, verified, valid } = req?.body; // Get hotelId from the request parameters
+    // const { verified, valid } = req.body; // Get verified and valid fields from the request body
+  
+    console.log(hotelId);
+    console.log(verified);
+    console.log(valid);
+    
+    try {
+        // Update the hotel record directly using the update method
+        const [updated] = await db.Hotel.update(
+          { verified, valid }, // Fields to update
+          { where: { hotelId } } // Condition to find the correct hotel
+        );
+    
+        if (updated) {
+          // Fetch the updated hotel details
+          const updatedHotel = await db.Hotel.findByPk(hotelId);
+          res.status(200).json({
+            message: 'Hotel status updated successfully',
+            hotel: updatedHotel,
+          });
+        } else {
+          res.status(204).json({ error: 'Hotel not found' });
+        }
+    } catch (error) {
+        console.error('Error updating hotel status:', error);
+        res.status(500).json({ error: 'An error occurred while updating hotel status' });
+    }
+  }
+)
+
+app.put('/updateHotel', async (req, res) => {
+    const { hotelId } = req.body; // Get hotelId from the request parameters
+    const fieldsToUpdate = req.body; // Get dynamic fields to update from the request body
+  
+    try {
+      // Ensure there are fields to update
+      if (!Object.keys(fieldsToUpdate).length) {
+        return res.status(400).json({ error: 'No fields provided to update' });
+      }
+  
+      // Update the hotel record dynamically using the update method
+      const [updated] = await db.Hotel.update(
+        fieldsToUpdate, // Fields to update dynamically
+        { where: { hotelId } } // Condition to find the correct hotel
+      );
+  
+      if (updated) {
+        // Fetch the updated hotel details
+        const updatedHotel = await db.Hotel.findByPk(hotelId);
+        res.status(200).json({
+          message: 'Hotel status updated successfully',
+          hotel: updatedHotel,
+        });
+      } else {
+        res.status(204).json({ error: 'Hotel not found' });
+      }
+    } catch (error) {
+      console.error('Error updating hotel status:', error);
+      res.status(500).json({ error: 'An error occurred while updating hotel status' });
+    }
+  }
+)
+
 app.get('/gethotels', async (req, res) => {
     try {
         const hotels = await db.Hotel.findAll({include: [
