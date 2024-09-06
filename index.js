@@ -77,10 +77,6 @@ app.put('/verify', async (req, res) => {
 
     const { hotelId, verified, valid } = req?.body; // Get hotelId from the request parameters
     // const { verified, valid } = req.body; // Get verified and valid fields from the request body
-  
-    console.log(hotelId);
-    console.log(verified);
-    console.log(valid);
     
     try {
         // Update the hotel record directly using the update method
@@ -139,18 +135,25 @@ app.put('/updateHotel', async (req, res) => {
   }
 )
 
-app.get('/gethotels', async (req, res) => {
+app.get('/gethotels/:verified?', async (req, res) => {
+    const verified = req.params.verified;
+    const whereCondition = verified ? {} : {verified: false};
+
     try {
-        const hotels = await db.Hotel.findAll({include: [
-            {
-                model: db.HotelSignatureDish,
-                as: 'hotelSignatureDishes'
-            },
-            {
-                model: db.HotelTiming,
-                as: 'hotelTimings'
-            }
-        ]});
+        const hotels = await db.Hotel.findAll({
+            where: { ...whereCondition },
+            include: [
+                {
+                    model: db.HotelSignatureDish,
+                    as: 'hotelSignatureDishes'
+                },
+                {
+                    model: db.HotelTiming,
+                    as: 'hotelTimings'
+                }
+            ]
+        });
+        
         res.status(200).json(hotels);
     } catch (error) {
         res.status(500).json({ error: error.message });
