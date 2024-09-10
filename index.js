@@ -166,7 +166,7 @@ app.get('/getVerifiedHotels', async (req, res) => {
 
     try {
         const hotels = await db.Hotel.findAll({
-            where: { verified: true, latitude: null, longitude: null },
+            where: { verified: true },
             include: [
                 {
                     model: db.HotelSignatureDish,
