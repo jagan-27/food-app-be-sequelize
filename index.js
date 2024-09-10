@@ -160,6 +160,31 @@ app.get('/gethotels/:verified?', async (req, res) => {
     }
 })
 
+app.get('/getVerifiedHotels', async (req, res) => {
+    const verified = req.params.verified;
+    const whereCondition = verified ? {} : {verified: false};
+
+    try {
+        const hotels = await db.Hotel.findAll({
+            where: { verified: true, latitude: null, longitude: null },
+            include: [
+                {
+                    model: db.HotelSignatureDish,
+                    as: 'hotelSignatureDishes'
+                },
+                {
+                    model: db.HotelTiming,
+                    as: 'hotelTimings'
+                }
+            ]
+        });
+        
+        res.status(200).json(hotels);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
 app.post('/createhotel', async (req, res) => {
     try {
         const hotel = req.body;

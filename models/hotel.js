@@ -88,6 +88,14 @@ module.exports = function(sequelize, DataTypes) {
     valid: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    latitude: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    longitude: {
+      type: DataTypes.STRING(100),
+      allowNull: true
     }
   }, {
     sequelize,
