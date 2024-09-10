@@ -44,25 +44,41 @@ app.post('/login', async (req, res) => {
 app.get('/count/:userMobileNumber?', async (req, res) => {
     try {
         const userMobileNumber = req.params.userMobileNumber;
-        
-        // Get the current date as a string in 'YYYY-MM-DD' format
         const currentDateOnly = new Date().toISOString().split('T')[0];
         const whereCondition = userMobileNumber ? { userMobileNumber } : {};
-        const hotels = await db.Hotel.count({ where: whereCondition });
+
+        const hotels = await db.Hotel.count({ 
+            where: {
+                ...whereCondition,
+                [Sequelize.Op.and]: [
+                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
+                      [Sequelize.Op.gt]: '2024-09-08',
+                    }),
+                ],
+            },
+        });
+
         const dailyCount = await db.Hotel.count({ 
             where: {
                 ...whereCondition,
                 [Op.and]: [
-                  Sequelize.where(fn('DATE', col('created_date')), currentDateOnly) // Proper use of Sequelize's functions
+                  Sequelize.where(fn('DATE', col('created_date')), currentDateOnly)
                 ]
             }
         });
+
         const verifiedHotel = await db.Hotel.count({ 
             where: { 
                 ...whereCondition,
-                valid: true 
+                valid: true,
+                [Sequelize.Op.and]: [
+                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
+                      [Sequelize.Op.gt]: '2024-09-08',
+                    }),
+                ],
             } 
         });
+
         res.status(200).json({ 
             allCount: hotels, 
             verifiedCount: verifiedHotel,
