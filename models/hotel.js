@@ -96,6 +96,16 @@ module.exports = function(sequelize, DataTypes) {
     longitude: {
       type: DataTypes.STRING(100),
       allowNull: true
+    },
+    videoId: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      field: 'video_id'
+    },
+    videoType: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      field: 'video_type'
     }
   }, {
     sequelize,

@@ -211,6 +211,36 @@ app.get('/getVerifiedHotels/:showLatitude?', async (req, res) => {
 app.post('/createhotel', async (req, res) => {
     try {
         const hotel = req.body;
+
+        // Function to extract the video ID
+        const extractVideoId = (url) => {
+            if (url.includes('youtu.be/')) {
+                return url.split('youtu.be/')[1].split('?')[0];
+            } else if (url.includes('youtube.com/watch?v=')) {
+                return url.split('watch?v=')[1].split('&')[0];
+            } else if (url.includes('youtube.com/shorts/')) {
+                return url.split('shorts/')[1].split('?')[0];
+            } else if (url.includes('instagram.com/reel/')) {
+                return url.split('reel/')[1].split('/')[0];
+            }
+            return null; // return null if URL pattern does not match
+        };
+
+        // Extract video ID from the hotelVlogVideoLink
+        const videoId = extractVideoId(hotel.hotelVlogVideoLink);
+
+        if (!videoId) {
+            return res.status(400).json({ error: "Invalid video link" });
+        }
+
+        // Check if a hotel with the extracted videoId already exists
+        const existingHotel = await db.Hotel.findOne({ where: { video_id: videoId } });
+
+        if (existingHotel) {
+            return res.status(208).json({ success: false, message: "Hotel with this video already exists" });
+        }
+
+        // If no existing hotel, create the new one
         const [result, created] = await db.Hotel.findOrCreate({
             where: { hotelVlogVideoLink: hotel.hotelVlogVideoLink }, defaults: {
                 userMobileNumber: hotel.userMobileNumber,
@@ -222,7 +252,8 @@ app.post('/createhotel', async (req, res) => {
                 hotelMapLocationLink: hotel.hotelMapLocationLink,
                 vlogVideoViewCount: hotel.vlogVideoViewCount,
                 vlogPostDate: hotel.vlogPostDate,
-                hotelVlogVideoLink: hotel.hotelVlogVideoLink
+                hotelVlogVideoLink: hotel.hotelVlogVideoLink,
+                video_id: videoId
             }
         });
         if (created) {
