@@ -226,8 +226,23 @@ app.post('/createhotel', async (req, res) => {
             return null; // return null if URL pattern does not match
         };
 
+        // Function to extract the video Type
+        const extractVideoType = (url) => {
+            if (url.includes('youtu.be/')) {
+                return 'Youtube';
+            } else if (url.includes('youtube.com/watch?v=')) {
+                return 'Youtube';
+            } else if (url.includes('youtube.com/shorts/')) {
+                return 'Youtube';
+            } else if (url.includes('instagram.com/reel/')) {
+                return 'Instagram';
+            }
+            return null; // return null if URL pattern does not match
+        };
+
         // Extract video ID from the hotelVlogVideoLink
         const videoId = extractVideoId(hotel.hotelVlogVideoLink);
+        const videoType = extractVideoType(hotel.hotelVlogVideoLink);
 
         if (!videoId) {
             return res.status(400).json({ error: "Invalid video link" });
@@ -253,7 +268,8 @@ app.post('/createhotel', async (req, res) => {
                 vlogVideoViewCount: hotel.vlogVideoViewCount,
                 vlogPostDate: hotel.vlogPostDate,
                 hotelVlogVideoLink: hotel.hotelVlogVideoLink,
-                video_id: videoId
+                videoId: videoId,
+                videoType: videoType
             }
         });
         if (created) {
