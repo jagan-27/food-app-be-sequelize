@@ -169,20 +169,25 @@ app.get('/gethotels/:verified?', async (req, res) => {
                 }
             ]
         });
-        
         res.status(200).json(hotels);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 })
 
-app.get('/getVerifiedHotels', async (req, res) => {
-    const verified = req.params.verified;
-    const whereCondition = verified ? {} : {verified: false};
+app.get('/getVerifiedHotels/:showLatitude?', async (req, res) => {
+    const showLatitude = req.params.showLatitude;
+    let whereCondition = { verified: true };
 
+    if (showLatitude) {
+        whereCondition.latitude = { [db.Sequelize.Op.ne]: null };
+    } else {
+        whereCondition.latitude = null;
+        whereCondition.longitude = null;
+    }
     try {
         const hotels = await db.Hotel.findAll({
-            where: { verified: true },
+            where: whereCondition,
             include: [
                 {
                     model: db.HotelSignatureDish,
@@ -194,6 +199,8 @@ app.get('/getVerifiedHotels', async (req, res) => {
                 }
             ]
         });
+        
+        console.log(hotels.length);
         
         res.status(200).json(hotels);
     } catch (error) {
