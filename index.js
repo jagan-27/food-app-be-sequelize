@@ -43,46 +43,46 @@ app.post('/login', async (req, res) => {
 
 app.get('/count/:userMobileNumber?', async (req, res) => {
     try {
-        const userMobileNumber = req.params.userMobileNumber;
-        const currentDateOnly = new Date().toISOString().split('T')[0];
-        const whereCondition = userMobileNumber ? { userMobileNumber } : {};
+        // const userMobileNumber = req.params.userMobileNumber;
+        // const currentDateOnly = new Date().toISOString().split('T')[0];
+        // const whereCondition = userMobileNumber ? { userMobileNumber } : {};
 
-        const hotels = await db.Hotel.count({ 
-            where: {
-                ...whereCondition,
-                [Sequelize.Op.and]: [
-                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-09-08',
-                    }),
-                ],
-            },
-        });
+        // const hotels = await db.Hotel.count({ 
+        //     where: {
+        //         ...whereCondition,
+        //         [Sequelize.Op.and]: [
+        //             sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
+        //               [Sequelize.Op.gt]: '2024-09-08',
+        //             }),
+        //         ],
+        //     },
+        // });
 
-        const dailyCount = await db.Hotel.count({ 
-            where: {
-                ...whereCondition,
-                [Op.and]: [
-                  Sequelize.where(fn('DATE', col('created_date')), currentDateOnly)
-                ]
-            }
-        });
+        // const dailyCount = await db.Hotel.count({ 
+        //     where: {
+        //         ...whereCondition,
+        //         [Op.and]: [
+        //           Sequelize.where(fn('DATE', col('created_date')), currentDateOnly)
+        //         ]
+        //     }
+        // });
 
-        const verifiedHotel = await db.Hotel.count({ 
-            where: { 
-                ...whereCondition,
-                valid: true,
-                [Sequelize.Op.and]: [
-                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-09-08',
-                    }),
-                ],
-            } 
-        });
+        // const verifiedHotel = await db.Hotel.count({ 
+        //     where: { 
+        //         ...whereCondition,
+        //         valid: true,
+        //         [Sequelize.Op.and]: [
+        //             sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
+        //               [Sequelize.Op.gt]: '2024-09-08',
+        //             }),
+        //         ],
+        //     } 
+        // });
 
         res.status(200).json({ 
-            allCount: hotels, 
-            verifiedCount: verifiedHotel,
-            dailyCount: dailyCount
+            allCount: "0", 
+            verifiedCount: "0",
+            dailyCount: "0"
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
