@@ -122,7 +122,7 @@ app.get('/searchhotels/:name?', async (req, res) => {
         });
 
         if (hotels.length === 0) {
-            return res.status(404).json({ message: 'No hotels found with that name' });
+            return res.status(200).json([]);
         }
 
         res.json(hotels);
@@ -201,6 +201,29 @@ app.get('/gethotels/:verified?', async (req, res) => {
     try {
         const hotels = await db.Hotel.findAll({
             where: { ...whereCondition },
+            include: [
+                {
+                    model: db.HotelSignatureDish,
+                    as: 'hotelSignatureDishes'
+                },
+                {
+                    model: db.HotelTiming,
+                    as: 'hotelTimings'
+                }
+            ]
+        });
+        res.status(200).json(hotels);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
+app.get('/gethotelsDetails/:hotelId?', async (req, res) => {
+    const hotelId = req.params.hotelId;
+
+    try {
+        const hotels = await db.Hotel.findAll({
+            where: { hotelId: hotelId },
             include: [
                 {
                     model: db.HotelSignatureDish,
