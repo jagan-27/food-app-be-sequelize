@@ -43,51 +43,84 @@ app.post('/login', async (req, res) => {
 
 app.get('/count/:userMobileNumber?', async (req, res) => {
     try {
-        // const userMobileNumber = req.params.userMobileNumber;
-        // const currentDateOnly = new Date().toISOString().split('T')[0];
-        // const whereCondition = userMobileNumber ? { userMobileNumber } : {};
+        const userMobileNumber = req.params.userMobileNumber;
+        const currentDateOnly = new Date().toISOString().split('T')[0];
+        const whereCondition = userMobileNumber ? { userMobileNumber } : {};
 
-        // const hotels = await db.Hotel.count({ 
-        //     where: {
-        //         ...whereCondition,
-        //         [Sequelize.Op.and]: [
-        //             sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-        //               [Sequelize.Op.gt]: '2024-09-08',
-        //             }),
-        //         ],
-        //     },
-        // });
+        const hotels = await db.Hotel.count({ 
+            where: {
+                ...whereCondition,
+                [Sequelize.Op.and]: [
+                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
+                      [Sequelize.Op.gt]: '2024-09-08',
+                    }),
+                ],
+            },
+        });
 
-        // const dailyCount = await db.Hotel.count({ 
-        //     where: {
-        //         ...whereCondition,
-        //         [Op.and]: [
-        //           Sequelize.where(fn('DATE', col('created_date')), currentDateOnly)
-        //         ]
-        //     }
-        // });
+        const dailyCount = await db.Hotel.count({ 
+            where: {
+                ...whereCondition,
+                [Op.and]: [
+                  Sequelize.where(fn('DATE', col('created_date')), currentDateOnly)
+                ]
+            }
+        });
 
-        // const verifiedHotel = await db.Hotel.count({ 
-        //     where: { 
-        //         ...whereCondition,
-        //         valid: true,
-        //         [Sequelize.Op.and]: [
-        //             sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-        //               [Sequelize.Op.gt]: '2024-09-08',
-        //             }),
-        //         ],
-        //     } 
-        // });
+        const verifiedHotel = await db.Hotel.count({ 
+            where: { 
+                ...whereCondition,
+                valid: true,
+                [Sequelize.Op.and]: [
+                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
+                      [Sequelize.Op.gt]: '2024-09-08',
+                    }),
+                ],
+            } 
+        });
 
         res.status(200).json({ 
-            allCount: "0", 
-            verifiedCount: "0",
-            dailyCount: "0"
+            allCount: hotels, 
+            verifiedCount: verifiedHotel,
+            dailyCount: dailyCount
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 })
+
+app.get('/searchhotels/:name?', async (req, res) => {
+    const name = req.params?.name;
+
+    console.log(name);
+    
+    if (!name || name.trim() === "") {
+        return res.status(400).json({ error: 'Hotel name is required' });
+    }
+
+    try {
+        // Find hotels by name using the `LIKE` operator for partial matches
+        const hotels = await db.Hotel.findAll({
+            where: {
+                hotelName: {
+                    [Op.iLike]: `%${name}%`  // Search for hotel name containing the search string
+                }
+            },
+            attributes: {
+                exclude: ['userMobileNumber', 'vlogPostDate', 'verified', 'isActive', 'valid']
+            }
+        });
+
+        if (hotels.length === 0) {
+            return res.status(404).json({ message: 'No hotels found with that name' });
+        }
+
+        res.json(hotels);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 app.put('/verify', async (req, res) => {
 
@@ -285,11 +318,11 @@ app.post('/createhotel', async (req, res) => {
 app.post('/hotel/:id', async (req, res) => {
     try {
         const hotelId = req.params.id;
-        const [updated] = await hotel.update(req.body, {
+        const [updated] = await db.Hotel.update(req.body, {
             where: { hotelId }
         });
         if (updated) {
-            const updatedHotel = await hotel.findByPk(hotelId);
+            const updatedHotel = await db.Hotel.findByPk(hotelId);
             res.json(updatedHotel);
         } else {
             res.status(204).json({ error: 'Hotel not found' });
