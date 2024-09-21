@@ -108,7 +108,17 @@ app.get('/searchhotels/:name?', async (req, res) => {
             },
             attributes: {
                 exclude: ['userMobileNumber', 'vlogPostDate', 'verified', 'isActive', 'valid']
-            }
+            },
+            include: [
+                {
+                    model: db.HotelSignatureDish,
+                    as: 'hotelSignatureDishes'
+                },
+                {
+                    model: db.HotelTiming,
+                    as: 'hotelTimings'
+                }
+            ]
         });
 
         if (hotels.length === 0) {
