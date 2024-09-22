@@ -194,9 +194,33 @@ app.put('/updateHotel', async (req, res) => {
   }
 )
 
-app.get('/gethotels/:verified?', async (req, res) => {
-    const verified = req.params.verified;
-    const whereCondition = verified ? {} : {verified: false};
+app.get('/gethotels', async (req, res) => {
+    const { userMobileNumber, createdDate, verified } = req.query;
+
+    // Initialize whereCondition
+    const whereCondition = {
+        ...(verified ? {} : { verified: false }),
+    };
+
+    // Add userMobileNumber filter if provided
+    if (userMobileNumber) {
+        whereCondition.userMobileNumber = userMobileNumber;
+    }
+
+    // Add createdDate filter if provided and parse the date
+    if (createdDate) {
+        const startDate = new Date(createdDate);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 1);
+        whereCondition.createdDate = {
+            [Op.gte]: startDate,
+            [Op.lt]: endDate
+        };
+    }
+
+    console.log(whereCondition);
+    console.log(createdDate);
+    
 
     try {
         const hotels = await db.Hotel.findAll({
