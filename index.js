@@ -263,7 +263,8 @@ app.get('/getVerifiedHotels/:showLatitude?', async (req, res) => {
                     model: db.HotelTiming,
                     as: 'hotelTimings'
                 }
-            ]
+            ],
+            limit: 150
         });
         
         console.log(hotels.length);
