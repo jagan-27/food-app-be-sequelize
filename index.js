@@ -336,7 +336,8 @@ app.post('/createhotel', async (req, res) => {
                 vlogPostDate: hotel.vlogPostDate,
                 hotelVlogVideoLink: hotel.hotelVlogVideoLink,
                 videoId: videoId,
-                videoType: videoType
+                videoType: videoType,
+                hotelCategory: hotel.hotelCategory
             }
         });
         if (created) {
