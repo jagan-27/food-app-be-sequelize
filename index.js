@@ -20,6 +20,7 @@ db.User = models.user;
 db.Hotel = models.hotel;
 db.HotelSignatureDish = models.hotelSignatureDish;
 db.HotelTiming = models.hotelTiming;
+db.HotelVideo = models.hotelVideo;
 
 app.post('/login', async (req, res) => {
     try {
@@ -408,6 +409,27 @@ app.post('/timing', async (req, res) => {
         res.status(201).json({ success: true });
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/createhotelvideo', async (req, res) => {
+    try {
+        const video = req.body;
+
+        console.log(video);
+        const newVideo = await db.HotelVideo.create({
+            hotelVlogVideoLink: video.hotelVlogVideoLink,
+            vlogVideoViewCount: video.vlogVideoViewCount,
+            vlogPostDate: video.vlogPostDate,
+            videotype: video.videotype,
+            videoid: video.videoid,
+            hotelId: video.hotelId,
+            verified: video.verified,
+        });
+        return res.status(201).json(newVideo);
+    } catch (error) {
+        console.log(error, "error in createhotelvideo");
+        res.status(500).json({ error: "Error creating hotel video" });
     }
 });
 
