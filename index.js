@@ -5,7 +5,7 @@ const initModels = require('./models/init-models');
 const config = require('./config');
 
 
-const app = express()
+const app = express();
 app.use(cors())
 app.use(express.json())
 
@@ -453,16 +453,33 @@ app.post('/createhotelvideo', async (req, res) => {
 });
 
 // DELETE API to delete a hotel by hotelId
-app.delete('/deletehotel/:hotelId', async (req, res) => {
+app.get('/deletehotel/:hotelId', async (req, res) => {
     const { hotelId } = req.params;
     
+    console.log(hotelId);
+
     try {
+        await db.HotelTiming.destroy({
+            where: {
+              hotelId: hotelId
+            }
+        });
+
+        await db.HotelSignatureDish.destroy({
+            where: {
+              hotelId: hotelId
+            }
+        });
+
       // Find and delete the hotel record
       const deletedHotel = await db.Hotel.destroy({
         where: {
             hotelId: hotelId
         }
       });
+
+      console.log(deletedHotel);
+      
       
       // If no record found, send a 404 error
       if (!deletedHotel) {
