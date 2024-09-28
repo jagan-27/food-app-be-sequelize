@@ -48,12 +48,12 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
         const currentDateOnly = new Date().toISOString().split('T')[0];
         const whereCondition = userMobileNumber ? { userMobileNumber } : {};
 
-        const hotels = await db.Hotel.count({ 
+        const totalCount = await db.Hotel.count({ 
             where: {
                 ...whereCondition,
                 [Sequelize.Op.and]: [
                     sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-09-15',
+                      [Sequelize.Op.gt]: '2024-09-22',
                     }),
                 ],
             },
@@ -68,22 +68,35 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
             }
         });
 
-        const verifiedHotel = await db.Hotel.count({ 
+        const validCount = await db.Hotel.count({ 
             where: { 
                 ...whereCondition,
                 valid: true,
                 [Sequelize.Op.and]: [
                     sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-09-15',
+                      [Sequelize.Op.gt]: '2024-09-22',
+                    }),
+                ],
+            } 
+        });
+
+        const inValidCount = await db.Hotel.count({ 
+            where: { 
+                ...whereCondition,
+                valid: false,
+                [Sequelize.Op.and]: [
+                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
+                      [Sequelize.Op.gt]: '2024-09-22',
                     }),
                 ],
             } 
         });
 
         res.status(200).json({ 
-            allCount: hotels, 
-            verifiedCount: verifiedHotel,
-            dailyCount: dailyCount
+            allCount: totalCount, 
+            verifiedCount: validCount,
+            dailyCount: dailyCount,
+            inValidCount: inValidCount
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -438,6 +451,32 @@ app.post('/createhotelvideo', async (req, res) => {
         res.status(500).json({ error: "Error creating hotel video" });
     }
 });
+
+// DELETE API to delete a hotel by hotelId
+app.delete('/deletehotel/:hotelId', async (req, res) => {
+    const { hotelId } = req.params;
+    
+    try {
+      // Find and delete the hotel record
+      const deletedHotel = await db.Hotel.destroy({
+        where: {
+            hotelId: hotelId
+        }
+      });
+      
+      // If no record found, send a 404 error
+      if (!deletedHotel) {
+        return res.status(404).json({ message: 'Hotel not found' });
+      }
+  
+      // On successful deletion
+      return res.status(200).json({ message: 'Hotel deleted successfully' });
+    } catch (error) {
+      // Handle errors
+      console.error(error);
+      return res.status(500).json({ message: 'Error deleting hotel', error: error.message });
+    }
+  });
 
 app.listen(3001, () => {
     console.log('listening 3001 port')
