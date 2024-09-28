@@ -416,13 +416,15 @@ app.post('/createhotelvideo', async (req, res) => {
     try {
         const video = req.body;
 
+        console.log(video);
+        
         const [result, created] = await db.HotelVideo.findOrCreate({
             where: { hotelVlogVideoLink: video.hotelVlogVideoLink }, defaults: {
                 hotelVlogVideoLink: video.hotelVlogVideoLink,
                 vlogVideoViewCount: video.vlogVideoViewCount,
                 vlogPostDate: video.vlogPostDate,
-                videotype: video.videotype,
-                videoid: video.videoid,
+                videotype: video.videoType,
+                videoid: video.videoId,
                 hotelId: video.hotelId,
                 verified: video.verified,
             }
