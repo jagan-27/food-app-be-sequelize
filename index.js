@@ -416,17 +416,21 @@ app.post('/createhotelvideo', async (req, res) => {
     try {
         const video = req.body;
 
-        console.log(video);
-        const newVideo = await db.HotelVideo.create({
-            hotelVlogVideoLink: video.hotelVlogVideoLink,
-            vlogVideoViewCount: video.vlogVideoViewCount,
-            vlogPostDate: video.vlogPostDate,
-            videotype: video.videotype,
-            videoid: video.videoid,
-            hotelId: video.hotelId,
-            verified: video.verified,
+        const [result, created] = await db.HotelVideo.findOrCreate({
+            where: { hotelVlogVideoLink: video.hotelVlogVideoLink }, defaults: {
+                hotelVlogVideoLink: video.hotelVlogVideoLink,
+                vlogVideoViewCount: video.vlogVideoViewCount,
+                vlogPostDate: video.vlogPostDate,
+                videotype: video.videotype,
+                videoid: video.videoid,
+                hotelId: video.hotelId,
+                verified: video.verified,
+            }
         });
-        return res.status(201).json(newVideo);
+        if (created) {
+            return res.status(201).json(result);
+        }
+        return res.status(208).json({ success: false });
     } catch (error) {
         console.log(error, "error in createhotelvideo");
         res.status(500).json({ error: "Error creating hotel video" });
