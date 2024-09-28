@@ -108,7 +108,7 @@ app.get('/searchhotels/:name?', async (req, res) => {
                 }
             },
             attributes: {
-                exclude: ['userMobileNumber', 'vlogPostDate', 'verified', 'isActive', 'valid']
+                exclude: ['userMobileNumber', 'isActive']
             },
             include: [
                 {
