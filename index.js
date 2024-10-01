@@ -360,6 +360,12 @@ app.post('/createhotel', async (req, res) => {
             return res.status(208).json({ success: false, message: "Hotel with this video already exists" });
         }
 
+        if (videoType === 'Youtube') {  
+            return res.status(208).json({ success: false, message: "Youtube entry is temporarily stopped" });
+        }
+
+        console.log(videoType);
+
         // If no existing hotel, create the new one
         const [result, created] = await db.Hotel.findOrCreate({
             where: { hotelVlogVideoLink: hotel.hotelVlogVideoLink }, defaults: {
