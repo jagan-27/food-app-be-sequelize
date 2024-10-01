@@ -435,15 +435,45 @@ app.post('/createhotelvideo', async (req, res) => {
     try {
         const video = req.body;
 
-        console.log(video);
+        // Function to extract the video ID
+        const extractVideoId = (url) => {
+            if (url.includes('youtu.be/')) {
+                return url.split('youtu.be/')[1].split('?')[0];
+            } else if (url.includes('youtube.com/watch?v=')) {
+                return url.split('watch?v=')[1].split('&')[0];
+            } else if (url.includes('youtube.com/shorts/')) {
+                return url.split('shorts/')[1].split('?')[0];
+            } else if (url.includes('instagram.com/reel/')) {
+                return url.split('reel/')[1].split('/')[0];
+            }
+            return null; // return null if URL pattern does not match
+        };
+
+        // Function to extract the video Type
+        const extractVideoType = (url) => {
+            if (url.includes('youtu.be/')) {
+                return 'Youtube';
+            } else if (url.includes('youtube.com/watch?v=')) {
+                return 'Youtube';
+            } else if (url.includes('youtube.com/shorts/')) {
+                return 'Youtube';
+            } else if (url.includes('instagram.com/reel/')) {
+                return 'Instagram';
+            }
+            return null; // return null if URL pattern does not match
+        };
+
+        // Extract video ID from the hotelVlogVideoLink
+        const videoId = extractVideoId(video.hotelVlogVideoLink);
+        const videoType = extractVideoType(video.hotelVlogVideoLink);
         
         const [result, created] = await db.HotelVideo.findOrCreate({
             where: { hotelVlogVideoLink: video.hotelVlogVideoLink }, defaults: {
                 hotelVlogVideoLink: video.hotelVlogVideoLink,
                 vlogVideoViewCount: video.vlogVideoViewCount,
                 vlogPostDate: video.vlogPostDate,
-                videotype: video.videoType,
-                videoid: video.videoId,
+                videotype: videoType,
+                videoid: videoId,
                 hotelId: video.hotelId,
                 verified: video.verified,
                 userMobileNumber: video.userMobileNumber
