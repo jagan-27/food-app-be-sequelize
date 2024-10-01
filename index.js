@@ -381,7 +381,7 @@ app.post('/createhotel', async (req, res) => {
         if (created) {
             return res.status(201).json(result);
         }
-        return res.status(208).json({ success: false });
+        return res.status(208).json({ success: false, message: "Data Already exists" });
     } catch (error) {
         console.log(error, "error in createhotel")
         res.status(500).json({ error: "error in createhotel" });
@@ -440,12 +440,13 @@ app.post('/createhotelvideo', async (req, res) => {
                 videoid: video.videoId,
                 hotelId: video.hotelId,
                 verified: video.verified,
+                userMobileNumber: video.userMobileNumber
             }
         });
         if (created) {
             return res.status(201).json(result);
         }
-        return res.status(208).json({ success: false });
+        return res.status(208).json({ success: false, message: 'Data is already exists' });
     } catch (error) {
         console.log(error, "error in createhotelvideo");
         res.status(500).json({ error: "Error creating hotel video" });

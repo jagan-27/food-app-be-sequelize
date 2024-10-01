@@ -62,6 +62,11 @@ module.exports = function(sequelize, DataTypes) {
     videotype: {
       type: DataTypes.STRING(255),
       allowNull: true
+    },
+    userMobileNumber: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      field: 'user_mobile_number'
     }
   }, {
     sequelize,
