@@ -53,7 +53,7 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
                 ...whereCondition,
                 [Sequelize.Op.and]: [
                     sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-09-22',
+                      [Sequelize.Op.gt]: '2024-10-01',
                     }),
                 ],
             },
@@ -74,7 +74,7 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
                 valid: true,
                 [Sequelize.Op.and]: [
                     sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-09-22',
+                      [Sequelize.Op.gt]: '2024-10-01',
                     }),
                 ],
             } 
@@ -86,7 +86,7 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
                 valid: false,
                 [Sequelize.Op.and]: [
                     sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-09-22',
+                      [Sequelize.Op.gt]: '2024-10-01',
                     }),
                 ],
             } 
