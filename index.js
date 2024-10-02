@@ -467,6 +467,9 @@ app.post('/createhotelvideo', async (req, res) => {
         const videoId = extractVideoId(video.hotelVlogVideoLink);
         const videoType = extractVideoType(video.hotelVlogVideoLink);
         
+        console.log(videoId);
+        console.log(videoType);
+        
         const [result, created] = await db.HotelVideo.findOrCreate({
             where: { hotelVlogVideoLink: video.hotelVlogVideoLink }, defaults: {
                 hotelVlogVideoLink: video.hotelVlogVideoLink,
