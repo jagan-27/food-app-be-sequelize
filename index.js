@@ -59,6 +59,17 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
             },
         });
 
+        const totalCountVideo = await db.HotelVideo.count({ 
+            where: {
+                ...whereCondition,
+                [Sequelize.Op.and]: [
+                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
+                      [Sequelize.Op.gt]: '2024-10-01',
+                    }),
+                ],
+            },
+        });
+
         const dailyCount = await db.Hotel.count({ 
             where: {
                 ...whereCondition,
@@ -68,7 +79,28 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
             }
         });
 
+        const dailyCountVideo = await db.HotelVideo.count({ 
+            where: {
+                ...whereCondition,
+                [Op.and]: [
+                  Sequelize.where(fn('DATE', col('created_date')), currentDateOnly)
+                ]
+            }
+        });
+
         const validCount = await db.Hotel.count({ 
+            where: { 
+                ...whereCondition,
+                valid: true,
+                [Sequelize.Op.and]: [
+                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
+                      [Sequelize.Op.gt]: '2024-10-01',
+                    }),
+                ],
+            } 
+        });
+
+        const validCountVideo = await db.HotelVideo.count({ 
             where: { 
                 ...whereCondition,
                 valid: true,
@@ -92,11 +124,23 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
             } 
         });
 
+        const inValidCountVideo = await db.HotelVideo.count({ 
+            where: { 
+                ...whereCondition,
+                valid: false,
+                [Sequelize.Op.and]: [
+                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
+                      [Sequelize.Op.gt]: '2024-10-01',
+                    }),
+                ],
+            } 
+        });
+        
         res.status(200).json({ 
-            allCount: totalCount, 
-            verifiedCount: validCount,
-            dailyCount: dailyCount,
-            inValidCount: inValidCount
+            allCount: totalCount + totalCountVideo, 
+            verifiedCount: validCount + validCountVideo,
+            dailyCount: dailyCount + dailyCountVideo,
+            inValidCount: inValidCount + inValidCountVideo
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -313,37 +357,41 @@ app.get('/getVerifiedHotels/:showLatitude?', async (req, res) => {
     }
 })
 
+// Function to extract the video ID
+const extractVideoId = (url) => {
+    if (url.includes('youtu.be/')) {
+        return url.split('youtu.be/')[1].split('?')[0];
+    } else if (url.includes('youtube.com/watch?v=')) {
+        return url.split('watch?v=')[1].split('&')[0];
+    } else if (url.includes('youtube.com/shorts/')) {
+        return url.split('shorts/')[1].split('?')[0];
+    } else if (url.includes('instagram.com/reel/')) {
+        return url.split('reel/')[1].split('/')[0];
+    } else if (url.includes('facebook.com/watch?v=')) {
+        return url.split('watch?v=')[1].split('&')[0];
+    } else if (url.includes('facebook.com/reel/')) {
+        return url.split('reel/')[1].split('/')[0];
+    } else if (url.includes('facebook.com/share/v/')) {
+        return url.split('/v/')[1].split('?')[0];
+    }
+    return null;
+};
+
+ // Function to extract the video Type
+ const extractVideoType = (url) => {
+    if (url.includes('youtu.be/') || url.includes('youtube.com/watch?v=') || url.includes('youtube.com/shorts/')) {
+        return 'Youtube';
+    } else if (url.includes('instagram.com/reel/')) {
+        return 'Instagram';
+    } else if (url.includes('facebook.com/watch?v=') || url.includes('facebook.com/reel/') || url.includes('facebook.com/share/v/')) {
+        return 'Facebook';
+    }
+    return null;
+};
+
 app.post('/createhotel', async (req, res) => {
     try {
         const hotel = req.body;
-
-        // Function to extract the video ID
-        const extractVideoId = (url) => {
-            if (url.includes('youtu.be/')) {
-                return url.split('youtu.be/')[1].split('?')[0];
-            } else if (url.includes('youtube.com/watch?v=')) {
-                return url.split('watch?v=')[1].split('&')[0];
-            } else if (url.includes('youtube.com/shorts/')) {
-                return url.split('shorts/')[1].split('?')[0];
-            } else if (url.includes('instagram.com/reel/')) {
-                return url.split('reel/')[1].split('/')[0];
-            }
-            return null; // return null if URL pattern does not match
-        };
-
-        // Function to extract the video Type
-        const extractVideoType = (url) => {
-            if (url.includes('youtu.be/')) {
-                return 'Youtube';
-            } else if (url.includes('youtube.com/watch?v=')) {
-                return 'Youtube';
-            } else if (url.includes('youtube.com/shorts/')) {
-                return 'Youtube';
-            } else if (url.includes('instagram.com/reel/')) {
-                return 'Instagram';
-            }
-            return null; // return null if URL pattern does not match
-        };
 
         // Extract video ID from the hotelVlogVideoLink
         const videoId = extractVideoId(hotel.hotelVlogVideoLink);
@@ -434,34 +482,6 @@ app.post('/timing', async (req, res) => {
 app.post('/createhotelvideo', async (req, res) => {
     try {
         const video = req.body;
-
-        // Function to extract the video ID
-        const extractVideoId = (url) => {
-            if (url.includes('youtu.be/')) {
-                return url.split('youtu.be/')[1].split('?')[0];
-            } else if (url.includes('youtube.com/watch?v=')) {
-                return url.split('watch?v=')[1].split('&')[0];
-            } else if (url.includes('youtube.com/shorts/')) {
-                return url.split('shorts/')[1].split('?')[0];
-            } else if (url.includes('instagram.com/reel/')) {
-                return url.split('reel/')[1].split('/')[0];
-            }
-            return null; // return null if URL pattern does not match
-        };
-
-        // Function to extract the video Type
-        const extractVideoType = (url) => {
-            if (url.includes('youtu.be/')) {
-                return 'Youtube';
-            } else if (url.includes('youtube.com/watch?v=')) {
-                return 'Youtube';
-            } else if (url.includes('youtube.com/shorts/')) {
-                return 'Youtube';
-            } else if (url.includes('instagram.com/reel/')) {
-                return 'Instagram';
-            }
-            return null; // return null if URL pattern does not match
-        };
 
         // Extract video ID from the hotelVlogVideoLink
         const videoId = extractVideoId(video.hotelVlogVideoLink);
