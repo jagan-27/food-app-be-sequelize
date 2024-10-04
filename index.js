@@ -359,6 +359,7 @@ app.get('/getVerifiedHotels/:showLatitude?', async (req, res) => {
 
 // Function to extract the video ID
 const extractVideoId = (url) => {
+    console.log('Video ID');
     if (url.includes('youtu.be/')) {
         return url.split('youtu.be/')[1].split('?')[0];
     } else if (url.includes('youtube.com/watch?v=')) {
@@ -371,8 +372,8 @@ const extractVideoId = (url) => {
         return url.split('watch?v=')[1].split('&')[0];
     } else if (url.includes('facebook.com/reel/')) {
         return url.split('reel/')[1].split('/')[0];
-    } else if (url.includes('facebook.com/share/v/')) {
-        return url.split('/v/')[1].split('?')[0];
+    } else if (url.includes('facebook.com/share/')) {
+        return url.split('share/')[1];
     }
     return null;
 };
@@ -383,7 +384,7 @@ const extractVideoId = (url) => {
         return 'Youtube';
     } else if (url.includes('instagram.com/reel/')) {
         return 'Instagram';
-    } else if (url.includes('facebook.com/watch?v=') || url.includes('facebook.com/reel/') || url.includes('facebook.com/share/v/')) {
+    } else if (url.includes('facebook.com/watch?v=') || url.includes('facebook.com/reel/') || url.includes('facebook.com/share/')) {
         return 'Facebook';
     }
     return null;
