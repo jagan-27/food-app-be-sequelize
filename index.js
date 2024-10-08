@@ -192,15 +192,25 @@ app.get('/searchhotels/:name?', async (req, res) => {
 
 app.put('/verify', async (req, res) => {
 
-    const { hotelId, verified, valid } = req?.body; // Get hotelId from the request parameters
+    const { hotelId, verified, valid, hotelVideoData } = req?.body; // Get hotelId from the request parameters
     // const { verified, valid } = req.body; // Get verified and valid fields from the request body
     
     try {
         // Update the hotel record directly using the update method
-        const [updated] = await db.Hotel.update(
-          { verified, valid }, // Fields to update
-          { where: { hotelId } } // Condition to find the correct hotel
-        );
+
+        let updated;
+        if (hotelVideoData) {
+            [updated] = await db.HotelVideo.update(
+                { verified, valid }, // Fields to update
+                { where: { hotelId } } // Condition to find the correct hotel
+            );
+        } else {
+            [updated] = await db.Hotel.update(
+                { verified, valid }, // Fields to update
+                { where: { hotelId } } // Condition to find the correct hotel
+            );
+        }
+        
     
         if (updated) {
           // Fetch the updated hotel details
@@ -276,12 +286,8 @@ app.get('/gethotels', async (req, res) => {
         };
     }
 
-    console.log(whereCondition);
-    console.log(createdDate);
-    
-
     try {
-        const hotels = await db.Hotel.findAll({
+        let hotels = await db.Hotel.findAll({
             where: { ...whereCondition },
             include: [
                 {
@@ -294,7 +300,40 @@ app.get('/gethotels', async (req, res) => {
                 }
             ]
         });
-        res.status(200).json(hotels);
+
+        let hotelVideos = await db.HotelVideo.findAll({
+            where: { ...whereCondition },
+            include: [
+                {
+                    model: db.Hotel,
+                    as: 'hotel',
+                    attributes: [
+                        'hotelId', 
+                        'hotelName', 
+                        'hotelAddress', 
+                        'hotelCity', 
+                        'hotelMapLocationLink',
+                        'hotelPhone',
+                        'hotelRating',
+                        'hotelCategory'
+                    ]
+                }
+            ]
+        });
+
+        hotelVideos = hotelVideos.map(hotelVideo => {
+            return {
+                ...hotelVideo.get({ plain: true }),
+                duplicateVideoData: true
+            };
+        });
+  
+        const combinedData = [
+            ...hotels,
+            ...hotelVideos
+        ];
+  
+        res.status(200).json(combinedData);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -325,14 +364,14 @@ app.get('/gethotelsDetails/:hotelId?', async (req, res) => {
 
 app.get('/getVerifiedHotels/:showLatitude?', async (req, res) => {
     const showLatitude = req.params.showLatitude;
-    let whereCondition = { verified: true };
+    let whereCondition = { verified: true, hotelCategory: null };
 
-    if (showLatitude) {
-        whereCondition.latitude = { [db.Sequelize.Op.ne]: null };
-    } else {
-        whereCondition.latitude = null;
-        whereCondition.longitude = null;
-    }
+    // if (showLatitude) {
+    //     whereCondition.latitude = { [db.Sequelize.Op.ne]: null };
+    // } else {
+    //     whereCondition.latitude = null;
+    //     whereCondition.longitude = null;
+    // }
     try {
         const hotels = await db.Hotel.findAll({
             where: whereCondition,
