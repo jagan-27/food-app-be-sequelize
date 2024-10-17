@@ -2,7 +2,16 @@ const path = require('path');
 const fs = require('fs');
 const output = path.join(__dirname, "./models");
 
-const options = { directory: output, caseFile: 'c', caseModel: 'c', caseProp: 'c', lang: 'js', useDefine: false, singularize: true, spaces: true, indentation: 2,
+const options = { 
+    directory: output, 
+    caseFile: 'c', 
+    caseModel: 'c', 
+    caseProp: 'c', 
+    lang: 'js', 
+    useDefine: false, 
+    singularize: true, 
+    spaces: true, 
+    indentation: 2,
     typescript: false
  };
 

@@ -59,6 +59,9 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
             },
         });
 
+        console.log(totalCount);
+        
+
         const totalCountVideo = await db.HotelVideo.count({ 
             where: {
                 ...whereCondition,
@@ -70,6 +73,8 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
             },
         });
 
+        console.log(totalCountVideo);
+
         const dailyCount = await db.Hotel.count({ 
             where: {
                 ...whereCondition,
@@ -79,6 +84,8 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
             }
         });
 
+        console.log(dailyCount);
+
         const dailyCountVideo = await db.HotelVideo.count({ 
             where: {
                 ...whereCondition,
@@ -87,6 +94,8 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
                 ]
             }
         });
+
+        console.log(dailyCountVideo);
 
         const validCount = await db.Hotel.count({ 
             where: { 
@@ -364,14 +373,13 @@ app.get('/gethotelsDetails/:hotelId?', async (req, res) => {
 
 app.get('/getVerifiedHotels/:showLatitude?', async (req, res) => {
     const showLatitude = req.params.showLatitude;
-    let whereCondition = { verified: true, hotelCategory: null };
 
-    // if (showLatitude) {
-    //     whereCondition.latitude = { [db.Sequelize.Op.ne]: null };
-    // } else {
-    //     whereCondition.latitude = null;
-    //     whereCondition.longitude = null;
-    // }
+    if (showLatitude) {
+        whereCondition.latitude = { [db.Sequelize.Op.ne]: null };
+    } else {
+        whereCondition.latitude = null;
+        whereCondition.longitude = null;
+    }
     try {
         const hotels = await db.Hotel.findAll({
             where: whereCondition,
