@@ -373,6 +373,7 @@ app.get('/gethotelsDetails/:hotelId?', async (req, res) => {
 
 app.get('/getVerifiedHotels/:showLatitude?', async (req, res) => {
     const showLatitude = req.params.showLatitude;
+    let whereCondition = { verified: true };
 
     if (showLatitude) {
         whereCondition.latitude = { [db.Sequelize.Op.ne]: null };
