@@ -51,61 +51,68 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
         const totalCount = await db.Hotel.count({ 
             where: {
                 ...whereCondition,
-                [Sequelize.Op.and]: [
-                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-10-13',
-                    }),
-                ],
+                [Op.and]: [
+                    {
+                      created_date: {
+                        [Op.gte]: `2024-10-13 00:00:00`,
+                      }
+                    },
+                ]
             },
         });
-
-        console.log(totalCount);
-        
 
         const totalCountVideo = await db.HotelVideo.count({ 
             where: {
                 ...whereCondition,
-                [Sequelize.Op.and]: [
-                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-10-13',
-                    }),
-                ],
+                [Op.and]: [
+                    {
+                      created_date: {
+                        [Op.gte]: `2024-10-13 00:00:00`,
+                      }
+                    },
+                ]
             },
         });
-
-        console.log(totalCountVideo);
 
         const dailyCount = await db.Hotel.count({ 
             where: {
                 ...whereCondition,
                 [Op.and]: [
-                  Sequelize.where(fn('DATE', col('created_date')), currentDateOnly)
+                    {
+                      created_date: {
+                        [Op.gte]: `${currentDateOnly} 00:00:00`,  // Start of the day
+                        [Op.lt]: `${currentDateOnly} 23:59:59`    // End of the day
+                      }
+                    },
                 ]
             }
         });
-
-        console.log(dailyCount);
 
         const dailyCountVideo = await db.HotelVideo.count({ 
             where: {
                 ...whereCondition,
                 [Op.and]: [
-                  Sequelize.where(fn('DATE', col('created_date')), currentDateOnly)
+                    {
+                      created_date: {
+                        [Op.gte]: `${currentDateOnly} 00:00:00`,  // Start of the day
+                        [Op.lt]: `${currentDateOnly} 23:59:59`    // End of the day
+                      }
+                    },
                 ]
             }
         });
-
-        console.log(dailyCountVideo);
 
         const validCount = await db.Hotel.count({ 
             where: { 
                 ...whereCondition,
                 valid: true,
-                [Sequelize.Op.and]: [
-                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-10-13',
-                    }),
-                ],
+                [Op.and]: [
+                    {
+                      created_date: {
+                        [Op.gte]: `2024-10-13 00:00:00`,
+                      }
+                    },
+                ]
             } 
         });
 
@@ -113,11 +120,13 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
             where: { 
                 ...whereCondition,
                 valid: true,
-                [Sequelize.Op.and]: [
-                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-10-13',
-                    }),
-                ],
+                [Op.and]: [
+                    {
+                      created_date: {
+                        [Op.gte]: `2024-10-13 00:00:00`,
+                      }
+                    },
+                ]
             } 
         });
 
@@ -125,11 +134,13 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
             where: { 
                 ...whereCondition,
                 valid: false,
-                [Sequelize.Op.and]: [
-                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-10-13',
-                    }),
-                ],
+                [Op.and]: [
+                    {
+                      created_date: {
+                        [Op.gte]: `2024-10-13 00:00:00`,
+                      }
+                    },
+                ]
             } 
         });
 
@@ -137,11 +148,13 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
             where: { 
                 ...whereCondition,
                 valid: false,
-                [Sequelize.Op.and]: [
-                    sequelize.where(sequelize.cast(sequelize.col('created_date'), 'DATE'), {
-                      [Sequelize.Op.gt]: '2024-10-13',
-                    }),
-                ],
+                [Op.and]: [
+                    {
+                      created_date: {
+                        [Op.gte]: `2024-10-13 00:00:00`,
+                      }
+                    },
+                ]
             } 
         });
         
