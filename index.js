@@ -172,8 +172,6 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
 app.get('/searchhotels/:name?', async (req, res) => {
     const name = req.params?.name;
 
-    console.log(name);
-    
     if (!name || name.trim() === "") {
         return res.status(400).json({ error: 'Hotel name is required' });
     }
@@ -410,8 +408,6 @@ app.get('/getVerifiedHotels/:showLatitude?', async (req, res) => {
             limit: 150
         });
         
-        console.log(hotels.length);
-        
         res.status(200).json(hotels);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -420,7 +416,6 @@ app.get('/getVerifiedHotels/:showLatitude?', async (req, res) => {
 
 // Function to extract the video ID
 const extractVideoId = (url) => {
-    console.log('Video ID');
     if (url.includes('youtu.be/')) {
         return url.split('youtu.be/')[1].split('?')[0];
     } else if (url.includes('youtube.com/watch?v=')) {
@@ -473,8 +468,6 @@ app.post('/createhotel', async (req, res) => {
         if (videoType === 'Youtube') {  
             return res.status(208).json({ success: false, message: "Youtube entry is temporarily stopped" });
         }
-
-        console.log(videoType);
 
         // If no existing hotel, create the new one
         const [result, created] = await db.Hotel.findOrCreate({
@@ -549,9 +542,6 @@ app.post('/createhotelvideo', async (req, res) => {
         const videoId = extractVideoId(video.hotelVlogVideoLink);
         const videoType = extractVideoType(video.hotelVlogVideoLink);
         
-        console.log(videoId);
-        console.log(videoType);
-        
         const [result, created] = await db.HotelVideo.findOrCreate({
             where: { hotelVlogVideoLink: video.hotelVlogVideoLink }, defaults: {
                 hotelVlogVideoLink: video.hotelVlogVideoLink,
@@ -578,8 +568,6 @@ app.post('/createhotelvideo', async (req, res) => {
 app.get('/deletehotel/:hotelId', async (req, res) => {
     const { hotelId } = req.params;
     
-    console.log(hotelId);
-
     try {
         await db.HotelTiming.destroy({
             where: {
@@ -600,9 +588,6 @@ app.get('/deletehotel/:hotelId', async (req, res) => {
         }
       });
 
-      console.log(deletedHotel);
-      
-      
       // If no record found, send a 404 error
       if (!deletedHotel) {
         return res.status(404).json({ message: 'Hotel not found' });
