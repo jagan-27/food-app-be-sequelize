@@ -169,6 +169,120 @@ app.get('/count/:userMobileNumber?', async (req, res) => {
     }
 })
 
+const incrementDate = (date) => {
+    const newDate = new Date(date);
+    newDate.setDate(newDate.getDate() + 1);
+    return newDate;
+};
+
+app.get('/generateSheet', async (req, res) => {
+    const { userMobileNumber, startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+        return res.status(200).json({ error: 'Both startDate and endDate are required' });
+    }
+
+    if (!userMobileNumber) {
+        return res.status(200).json({ error: 'Mobile Number is required' });
+    }
+
+    try {
+        let currentStartDate = new Date(startDate);
+        const finalEndDate = new Date(endDate);
+        finalEndDate.setDate(finalEndDate.getDate() + 1); 
+
+        const whereCondition = { userMobileNumber };
+
+        const results = [];
+
+        while (currentStartDate < finalEndDate) {
+            const currentEndDate = incrementDate(currentStartDate);
+
+            console.log(`${currentStartDate.toISOString().split('T')[0]} 00:00:00`);
+            console.log(`${currentEndDate.toISOString().split('T')[0]} 23:59:59`);
+            
+            const totalCount = await db.Hotel.count({ 
+                where: {
+                    ...whereCondition,
+                    [Op.and]: [
+                        {
+                          created_date: {
+                            [Op.gte]: `${currentStartDate.toISOString().split('T')[0]}`,
+                            [Op.lt]: `${currentEndDate.toISOString().split('T')[0]}`,
+                          }
+                        },
+                    ]
+                },
+            });
+
+            const totalCountVideo = await db.HotelVideo.count({ 
+                where: {
+                    ...whereCondition,
+                    [Op.and]: [
+                        {
+                          created_date: {
+                            [Op.gte]: `${currentStartDate.toISOString().split('T')[0]}`,
+                            [Op.lt]: `${currentEndDate.toISOString().split('T')[0]}`,
+                          }
+                        },
+                    ]
+                },
+            });
+
+            const validCount = await db.Hotel.count({ 
+                where: { 
+                    ...whereCondition,
+                    valid: true,
+                    [Op.and]: [
+                        {
+                            created_date: {
+                                [Op.gte]: `${currentStartDate.toISOString().split('T')[0]}`,
+                                [Op.lt]: `${currentEndDate.toISOString().split('T')[0]}`,
+                            }
+                        },
+                    ]
+                } 
+            });
+        
+            const validCountVideo = await db.HotelVideo.count({ 
+                where: { 
+                    ...whereCondition,
+                    valid: true,
+                    [Op.and]: [
+                        {
+                            created_date: {
+                                [Op.gte]: `${currentStartDate.toISOString().split('T')[0]}`,
+                                [Op.lt]: `${currentEndDate.toISOString().split('T')[0]}`,
+                            }
+                        },
+                    ]
+                } 
+            });
+
+            const userDetails = await db.User.findOne({ 
+                where: { 
+                    ...whereCondition,
+                } 
+            });
+
+            results.push({
+                userMobileNumber,
+                name: userDetails?.userName,
+                date: currentStartDate.toISOString().split('T')[0], // Format date as YYYY-MM-DD
+                totalCount: totalCount+totalCountVideo,
+                validCount: validCount+validCountVideo,
+            });
+
+            // Move to the next day
+            currentStartDate = currentEndDate;
+        }
+
+        res.status(200).json(results);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
 app.get('/searchhotels/:name?', async (req, res) => {
     const name = req.params?.name;
 
